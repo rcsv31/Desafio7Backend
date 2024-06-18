@@ -1,48 +1,27 @@
 const productRepository = require("../repositories/product.repository");
 
 class ProductService {
-    async addProduct(productData) {
-        const { title, description, price, thumbnails, code, stock, category } = productData;
-        if (!title || !description || !price || !thumbnails || !code || !stock || !category) {
-            throw new Error("El producto no puede tener campos vacíos");
-        }
+  async getProducts(filter = {}, options = {}) {
+    return await productRepository.getProducts(filter, options);
+  }
 
-        const productExists = await productRepository.getProducts({ code });
-        if (productExists.length > 0) {
-            throw new Error("Ya existe un producto con ese código");
-        }
+  async addProduct(productData) {
+    // Asumiendo que el DTO ya valida y estructura los datos
+    return await productRepository.addProduct(productData);
+  }
 
-        return await productRepository.addProduct(productData);
-    }
+  async getProductById(productId) {
+    return await productRepository.getProductById(productId);
+  }
 
-    async getProducts(filter = {}, options = {}) {
-        return await productRepository.getProducts(filter, options);
-    }
+  async updateProduct(productId, productData) {
+    // Asumiendo que el DTO ya valida y estructura los datos
+    return await productRepository.updateProduct(productId, productData);
+  }
 
-    async getProductById(id) {
-        const product = await productRepository.getProductById(id);
-        if (!product) {
-            throw new Error(`El producto con el ID ${id} no fue encontrado`);
-        }
-        return product;
-    }
-
-    async updateProduct(id, updatedProduct) {
-        const product = await productRepository.updateProduct(id, updatedProduct);
-        if (!product) {
-            throw new Error(`El producto con el ID ${id} no existe`);
-        }
-        return product;
-    }
-
-    async deleteProduct(id) {
-        const product = await productRepository.deleteProduct(id);
-        if (!product) {
-            throw new Error(`No hay productos con el ID ${id}`);
-        }
-        return product;
-    }
+  async deleteProduct(productId) {
+    return await productRepository.deleteProduct(productId);
+  }
 }
 
 module.exports = new ProductService();
-

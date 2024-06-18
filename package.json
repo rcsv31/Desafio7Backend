@@ -1,7 +1,7 @@
 {
-  "name": "desafio7",
+  "name": "preentrega3",
   "version": "1.0.0",
-  "description": "Desafio7",
+  "description": "Preentrega3",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

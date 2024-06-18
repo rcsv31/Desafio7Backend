@@ -95,3 +95,29 @@ select {
   height: auto;
   margin-bottom: 10px;
 }
+
+.ticket-info {
+  margin-top: 20px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.ticket-info p {
+  margin: 10px 0;
+}
+
+.product-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.product-item {
+  border-bottom: 1px solid #ccc;
+  padding: 10px 0;
+}
+
+.product-item:last-child {
+  border-bottom: none;
+}

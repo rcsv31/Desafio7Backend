@@ -1,16 +1,29 @@
 const express = require("express");
 const session = require("express-session");
-const expresshandlebars = require("express-handlebars");
+const expressHandlebars = require("express-handlebars");
 const socket = require("socket.io");
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const initializePassport = require("./config/passport.config.js");
 const configObject = require("./config/config.js");
-const MongoStore = require("connect-mongo");
 const program = require("./utils/commander.js");
-
+const mongoose = require("mongoose");
 const { puerto, session_secret, mongo_url } = configObject;
 require("./database.js");
+
+// Conexión a MongoDB con Mongoose
+mongoose
+  .connect(mongo_url, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+  })
+  .then(() => {
+    console.log("Conectado a MongoDB");
+  })
+  .catch((err) => {
+    console.error("Error al conectar a MongoDB:", err);
+  });
 
 // Crear una aplicación Express
 const app = express();
@@ -19,24 +32,29 @@ const app = express();
 app.use(express.static("./src/public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Configuración de express-session con Mongoose
+const sessionModel = require("express-session").Store;
 app.use(
   session({
     secret: session_secret,
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({
-      mongoUrl: mongo_url,
-      ttl: 1 * 24 * 60 * 60,
+    store: new sessionModel({
+      mongooseConnection: mongoose.connection,
+      collection: "sessions", // Nombre de la colección de sesiones en MongoDB
+      ttl: 1 * 24 * 60 * 60, // Tiempo de vida de la sesión en segundos (1 día)
     }),
   })
 );
+
 app.use(cookieParser());
 app.use(passport.initialize());
 app.use(passport.session());
 initializePassport();
 
 // Configuración de handlebars
-const hbs = expresshandlebars.create({
+const hbs = expressHandlebars.create({
   defaultLayout: "main",
   runtimeOptions: {
     allowProtoPropertiesByDefault: true,
@@ -77,7 +95,3 @@ io.on("connection", (socket) => {
     io.sockets.emit("message", messages);
   });
 });
-
-// Manejo de eventos de productos, carrito y otros eventos
-//require("./sockets/products.socket.js")(io);
-//require("./sockets/cart.socket.js")(io);
